@@ -18,11 +18,16 @@ const Get_project_controller = async (req, res) => {
     const result = await Project_model.find(search_query).count();
 
     // Sort the data
-    let sort = "";
+    let sort = {createdAt : -1};
+ 
     if (req.query.sort) {
-      sort += `-${req.query.sort}`
+      sort = {
+        [req.query.sort]  : 1
+      }
+      // sort += `-${req.query.sort}`
     }
-    project = project.sort(`-createdAt ${sort}`);
+
+    project = project.sort(sort);
 
     // Pegination
     const limit = req.query.limit || 6;
@@ -41,6 +46,7 @@ const Get_project_controller = async (req, res) => {
     return res.status(201).json(response);
   } catch (error) {
     // Create error response
+    console.log(error)
     const error_response = {
       status: "fail",
       message: "An error occurred",
