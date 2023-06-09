@@ -13,7 +13,7 @@ const Get_project_status_controller = async (req, res) => {
     data.push({ title: "Running", count: total_running });
     const currentDate = new Date();
     const total_closure_delay = await Project_model.find({
-      end_date: {$gt : currentDate},
+      end_date: {$lt : currentDate},
     }).count();
     data.push({ title: "Closure Delay", count: total_closure_delay });
     const total_cancelled = await Project_model.find({
