@@ -43,12 +43,12 @@ const projectSchema = new mongoose.Schema(
       trim: true,
     },
     start_date: {
-      type: String,
+      type: Date,
       required: true,
       trim: true,
     },
     end_date: {
-      type: String,
+      type: Date,
       required: true,
       trim: true,
     },
