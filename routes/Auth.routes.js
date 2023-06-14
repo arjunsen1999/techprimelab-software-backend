@@ -4,10 +4,7 @@ const { LoginController } = require("../controller/Auth/Login.controller");
 
 authRouter.route("/login").post(
   [
-    body("email", "Enter a vaild email").isEmail(),
-    body("password", "Password length must be atleast 4").isLength({
-      min: 4,
-    }),
+    body("email", "Enter a vaild email").isEmail()
   ],
   LoginController
 );
