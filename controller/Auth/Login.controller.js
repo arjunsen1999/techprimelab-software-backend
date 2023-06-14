@@ -42,7 +42,7 @@ const LoginController = async (req, res) => {
     if (!passwordMatch) {
       return res
         .status(401)
-        .json({ status: "error", message: "Invalid password" });
+        .json({ status: "error", message: "Invalid credentials" });
     }
 
     // Generate a JWT token
