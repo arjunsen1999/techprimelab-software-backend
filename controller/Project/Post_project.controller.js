@@ -22,6 +22,17 @@ const Post_project_controller = async (req, res) => {
         .status(400)
         .send({ status: "error", message: errors.array()[0].msg });
     }
+
+    const new_start_date = new Date(start_date);
+    const new_end_date = new Date(end_date);
+
+    if(new_end_date < new_start_date){
+      return res.status(400).json({
+        status : "error",
+        message : "The end date should be greater than the start date"
+      })
+    }
+
     const createProject = await Project_model.create({
       project_name,
       reason,
