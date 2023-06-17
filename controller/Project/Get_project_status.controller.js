@@ -2,25 +2,47 @@ const { Project_model } = require("../../models/Project.model");
 
 const Get_project_status_controller = async (req, res) => {
   try {
-    const data = [];
-    const total_project = await Project_model.find().count();
-    data.push({ title: "Total Projects", count: total_project });
-    const total_closed = await Project_model.find({ status: "Closed" }).count();
-    data.push({ title: "Close", count: total_closed });
-    const total_running = await Project_model.find({
-      status: "Running",
-    }).count();
-    data.push({ title: "Running", count: total_running });
-    const currentDate = new Date();
-    const total_closure_delay = await Project_model.find({
-      status : "Running",
-      end_date: {$lt : currentDate},
-    }).count();
-    data.push({ title: "Closure Delay", count: total_closure_delay });
-    const total_cancelled = await Project_model.find({
-      status: "Cancelled",
-    }).count();
-    data.push({ title: "Cancelled", count: total_cancelled });
+    const pipeline = [
+      {
+        $group: {
+          _id: null,
+          total_project: { $sum: 1 },
+          total_closed: {
+            $sum: { $cond: [{ $eq: ["$status", "Closed"] }, 1, 0] },
+          },
+          total_running: {
+            $sum: { $cond: [{ $eq: ["$status", "Running"] }, 1, 0] },
+          },
+          total_closure_delay: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    { $eq: ["$status", "Running"] },
+                    { $lt: ["$end_date", new Date()] },
+                  ],
+                },
+                1,
+                0,
+              ],
+            },
+          },
+          total_cancelled: {
+            $sum: { $cond: [{ $eq: ["$status", "Cancelled"] }, 1, 0] },
+          },
+        },
+      },
+    ];
+
+    const result = await Project_model.aggregate(pipeline);
+
+    const data = [
+      { title: "Total Projects", count: result[0].total_project || 0 },
+      { title: "Closed", count: result[0].total_closed || 0 },
+      { title: "Running", count: result[0].total_running || 0 },
+      { title: "Closure Delay", count: result[0].total_closure_delay || 0 },
+      { title: "Cancelled", count: result[0].total_cancelled || 0 },
+    ];
 
     const response = {
       status: "success",
