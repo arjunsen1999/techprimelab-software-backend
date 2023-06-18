@@ -18,6 +18,7 @@ const createlabels = (name) =>{
 
 const Get_project_chart_controller = async (req, res) => {
   try {
+    // all pipeline code here
     const pipeline = [
       {
         $group: {
